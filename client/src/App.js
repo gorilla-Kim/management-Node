@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import Customer from './components/Customer';
 import Table from '@material-ui/core/Table';
@@ -8,6 +8,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import Paper from '@material-ui/core/Paper';
 import { withStyles } from "@material-ui/core/styles";
+import axios from 'axios';
 
 const styles = theme => ({
   root: {
@@ -18,39 +19,31 @@ const styles = theme => ({
   table: {
     minWidth: 1080
   }
-})
+});
 
-const customers = [
-  {
-    'id': 1,
-    'image': 'http://www.gorillawebmarketing.co.uk/wp-content/uploads/2014/02/a03-10-gorilla-computer-laptop-1-300x226.jpg',
-    'name' : 'gorilla-kim',
-    'birthday': '960322',
-    'gender': 'Man',
-    'job': 'Student'
-  },
-  {
-    'id': 2,
-    'image': 'http://www.gorillawebmarketing.co.uk/wp-content/uploads/2014/02/a03-10-gorilla-computer-laptop-1-300x226.jpg',
-    'name' : 'gorilla-kim',
-    'birthday': '960322',
-    'gender': 'Man',
-    'job': 'Student'
-  },
-  {
-    'id': 3,
-    'image': 'http://www.gorillawebmarketing.co.uk/wp-content/uploads/2014/02/a03-10-gorilla-computer-laptop-1-300x226.jpg',
-    'name' : 'gorilla-kim',
-    'birthday': '960322',
-    'gender': 'Man',
-    'job': 'Student'
-  }   
-];
+const initialState = {
+  customers: []
+}
 
 function App(props) {
-
+  const [states, setStates] = useState(initialState);
   const { classes } = props;
-  console.log(classes);
+  const { customers } = states;
+
+  const callApi = async () => {
+    try {
+      const response = await axios.get('/api/customers');
+      setStates({customers: response.data})
+    } catch (error) {
+      console.log(`❌  callApi error :: ${error}`, error);
+    }
+  };
+
+  useEffect(() => {
+    console.log("⚡  DidMounted!");
+    callApi();
+  }, []);
+
   return (
     <Paper className={classes.root}>
       <Table className={classes.table}>
