@@ -7,6 +7,7 @@ import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import Paper from '@material-ui/core/Paper';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import { withStyles } from "@material-ui/core/styles";
 import axios from 'axios';
 
@@ -18,30 +19,38 @@ const styles = theme => ({
   },
   table: {
     minWidth: 1080
+  },
+  progress: {
+    margin: theme.spacing(2)
   }
 });
 
-const initialState = {
-  customers: []
-}
-
 function App(props) {
-  const [states, setStates] = useState(initialState);
+  const [customers, setCustomers] = useState(null);
+  const [completed, setCompleted] = useState(0);
   const { classes } = props;
-  const { customers } = states;
 
   const callApi = async () => {
     try {
+      setCustomers(null);
       const response = await axios.get('/api/customers');
-      setStates({customers: response.data})
+      setCustomers(response.data)
     } catch (error) {
       console.log(`❌  callApi error :: ${error}`, error);
     }
   };
 
+  const progress = () => {
+    setCompleted(oldProgress => (oldProgress >= 100 ? 0 : oldProgress + 1));
+  }
+
   useEffect(() => {
     console.log("⚡  DidMounted!");
+    const timer = setInterval(progress, 20);
     callApi();
+    return () => {
+      clearInterval(timer);
+    };
   }, []);
 
   return (
@@ -58,7 +67,7 @@ function App(props) {
           </TableRow>
         </TableHead>
         <TableBody>
-          {customers.map(customer => {
+          {customers ? customers.map(customer => {
             return (
               <Customer 
                 key={customer.id}
@@ -70,7 +79,13 @@ function App(props) {
                 job={customer.job}
               />
             )  
-          })}
+          }) : 
+          <TableRow>
+            <TableCell colSpan="6" align="center">
+              <CircularProgress className={classes.progress} variant="determinate" value={completed}/>
+            </TableCell>
+          </TableRow>
+          }
         </TableBody>
       </Table>
     </Paper>
