@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import './App.css';
 import Customer from './components/Customer';
+import CustomerAdd from './components/CustomerAdd';
 import Table from '@material-ui/core/Table';
 import TableBody from '@material-ui/core/TableBody';
 import TableHead from '@material-ui/core/TableHead';
@@ -32,7 +33,7 @@ function App(props) {
 
   const callApi = async () => {
     try {
-      setCustomers(null);
+      // setCustomers(null);
       const response = await axios.get('/api/customers');
       setCustomers(response.data)
     } catch (error) {
@@ -54,41 +55,44 @@ function App(props) {
   }, []);
 
   return (
-    <Paper className={classes.root}>
-      <Table className={classes.table}>
-        <TableHead>
-          <TableRow>
-            <TableCell>번호</TableCell>
-            <TableCell>이미지</TableCell>
-            <TableCell>이름</TableCell>
-            <TableCell>생년월일</TableCell>
-            <TableCell>성별</TableCell>
-            <TableCell>직업</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {customers ? customers.map(customer => {
-            return (
-              <Customer 
-                key={customer.id}
-                id={customer.id}
-                image={customer.image}
-                name={customer.name}
-                birthday={customer.birthday}
-                gender={customer.gender}
-                job={customer.job}
-              />
-            )  
-          }) : 
-          <TableRow>
-            <TableCell colSpan="6" align="center">
-              <CircularProgress className={classes.progress} variant="determinate" value={completed}/>
-            </TableCell>
-          </TableRow>
-          }
-        </TableBody>
-      </Table>
-    </Paper>
+    <div>
+      <Paper className={classes.root}>
+        <Table className={classes.table}>
+          <TableHead>
+            <TableRow>
+              <TableCell>번호</TableCell>
+              <TableCell>이미지</TableCell>
+              <TableCell>이름</TableCell>
+              <TableCell>생년월일</TableCell>
+              <TableCell>성별</TableCell>
+              <TableCell>직업</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {customers ? customers.map(customer => {
+              return (
+                <Customer 
+                  key={customer.id}
+                  id={customer.id}
+                  image={customer.image}
+                  name={customer.name}
+                  birthday={customer.birthday}
+                  gender={customer.gender}
+                  job={customer.job}
+                />
+              )  
+            }) : 
+            <TableRow>
+              <TableCell colSpan="6" align="center">
+                <CircularProgress className={classes.progress} variant="determinate" value={completed}/>
+              </TableCell>
+            </TableRow>
+            }
+          </TableBody>
+        </Table>
+      </Paper>
+      <CustomerAdd />
+    </div>
   );
 }
 
