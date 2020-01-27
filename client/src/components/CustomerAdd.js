@@ -1,5 +1,18 @@
 import React, { useState } from "react";
 import { post } from "axios";
+import Dialog from "@material-ui/core/Dialog";
+import DialogActions from "@material-ui/core/DialogActions";
+import DialogTitle from "@material-ui/core/DialogTitle";
+import DialogContent from "@material-ui/core/DialogContent";
+import TextField from "@material-ui/core/TextField";
+import Button from "@material-ui/core/Button";
+import { withStyles } from "@material-ui/core/styles";
+
+const styles = theme => ({
+    hidden: {
+        display: "none"
+    }
+});
 
 const initialUser = {
     file: null,
@@ -7,11 +20,13 @@ const initialUser = {
     birthday: "",
     gender: "",
     job: "",
-    fileName: ""
+    fileName: "",
+    open: false
 }
 
-export default function CustomerAdd(props) {
+function CustomerAdd(props) {
     const [user, setUser] = useState(initialUser);
+    const { classes } = props;
 
     const addCustomer = () => {
         const url="/api/customers";
@@ -56,15 +71,41 @@ export default function CustomerAdd(props) {
         })
     }
 
+    const handleClickOpen = () => {
+        setUser({...user, open: !user.open});
+    } 
+
     return(
-        <form onSubmit={handleFormSubmit}>
-            <h1>Added New Customer</h1>
-            Profile image: <input type="file" name="file" file={user.file} value={user.fileName} onChange={handleFileChange}/><br/>
-            Name: <input type="text" name="userName" value={user.userName} onChange={handleValueChange} /><br/>
-            Birth: <input type="text" name="birthday" value={user.birthday} onChange={handleValueChange} /><br/>
-            Gender: <input type="text" name="gender" value={user.gender} onChange={handleValueChange} /><br/>
-            Job: <input type="text" name="job" value={user.job} onChange={handleValueChange} /><br/>
-            <button type="submit">submit</button>
-        </form>
+        <div>
+            <Button variant="contained" color="primary" onClick={handleClickOpen}>
+                New Customer
+            </Button>
+            <Dialog open={user.open} onClose={handleClickOpen}>
+                <DialogTitle>Add new Customer</DialogTitle>
+                <DialogContent>
+                    <input className={classes.hidden} accept="image/*" type="file" id="raised-button-file" file={user.file} value={user.fileName} onChange={handleFileChange}/><br/>
+                    <label htmlFor="raised-button-file">
+                        <Button variant="contained" color="primary" component="span" name="file">
+                            {user.fileName === "" ? "Choose Profile image" : user.fileName}
+                        </Button>
+                    </label>
+                    <br/>
+                    <TextField label="NAME" type="text" name="userName" value={user.userName} onChange={handleValueChange} /><br/>
+                    <TextField label="BIRTH" type="text" name="birthday" value={user.birthday} onChange={handleValueChange} /><br/>
+                    <TextField label="GENDER" type="text" name="gender" value={user.gender} onChange={handleValueChange} /><br/>
+                    <TextField label="JOB" type="text" name="job" value={user.job} onChange={handleValueChange} /><br/>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant="contained" color="primary" onClick={handleFormSubmit} >
+                        Create!
+                    </Button>
+                    <Button variant="contained" color="primary" onClick={handleClickOpen} >
+                        Close
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </div>
     )    
 }
+
+export default  withStyles(styles)(CustomerAdd);

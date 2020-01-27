@@ -1,7 +1,17 @@
-import React from 'react';
+import React, { useState } from 'react';
 import axios from 'axios';
+import { Button, Typography, Dialog, DialogTitle, DialogContent, DialogActions } from '@material-ui/core';
+
+const initialState = {
+    open: false
+}
 
 export default function CustomerDelete(props) {
+    const [state, setstate] = useState(initialState);
+
+    const handleClickOpen = () => {
+        setstate({...state, open: !state.open});
+    } 
 
     const deleteCustomer = (id) => {
         const url = `/api/customers/${id}`;
@@ -15,6 +25,22 @@ export default function CustomerDelete(props) {
     }
 
     return (
-        <button onClick={(e) => deleteCustomer(props.id)}>Delete</button>
+        <div>
+            <Button variant="contained" color="secondary" onClick={handleClickOpen}>Delete</Button>
+            <Dialog open={state.open} onClose={handleClickOpen}>
+                <DialogTitle>
+                    Warnning to Delete!!
+                </DialogTitle>
+                <DialogContent>
+                    <Typography gutterBottom>
+                        The selected customer information is deleted.
+                    </Typography>
+                </DialogContent>
+                <DialogActions>
+                    <Button variant="contained" color="primary" onClick={(e) => deleteCustomer(props.id)}>Delete</Button>
+                    <Button variant="contained" color="primary" onClick={handleClickOpen}>Close</Button>
+                </DialogActions>
+            </Dialog>
+        </div>
     );
 }
