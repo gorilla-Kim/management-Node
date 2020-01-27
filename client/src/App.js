@@ -41,6 +41,12 @@ function App(props) {
     }
   };
 
+  const stateRefresh = () => {
+    setCustomers(null);
+    setCompleted(0);
+    callApi();
+  }
+
   const progress = () => {
     setCompleted(oldProgress => (oldProgress >= 100 ? 0 : oldProgress + 1));
   }
@@ -91,7 +97,7 @@ function App(props) {
           </TableBody>
         </Table>
       </Paper>
-      <CustomerAdd />
+      <CustomerAdd stateRefresh={stateRefresh} />
     </div>
   );
 }

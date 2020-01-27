@@ -58,19 +58,23 @@ app.get('/api/customers', (req, res) => {
   );
 });
 app.post('/api/customers', upload.single('image'), (req, res) => {
-  console.log(`=============`,req.file);
-  let sql = 'INSERT INTO CUSTOMER VALUES (null, ?, ?, ?, ?, ?)';
-  let image = '/image/' + req.file.filename;
-  let name = req.body.name;
-  let birthday = req.body.birthday;
-  let gender = req.body.gender;
-  let job = req.body.job;
-  let params = [image, name, birthday, gender, job];
-  connection.query(sql, params,
-      (req, rows, fields) => {
-        res.send(rows);
-      }
+  console.log(`============= Recived request api.customers =============`);
+  try {
+    let sql = 'INSERT INTO CUSTOMER VALUES (null, ?, ?, ?, ?, ?)';
+    let image = '/image/' + req.file.filename;
+    let name = req.body.name;
+    let birthday = req.body.birthday;
+    let gender = req.body.gender;
+    let job = req.body.job;
+    let params = [image, name, birthday, gender, job];
+    connection.query(sql, params,
+        (req, rows, fields) => {
+          res.send(rows);
+        }
     );
+  } catch (error) {
+    console.log(`❌  app.post(/api/customers) error!! :: ${error}`);
+  }
 });
 
 /* ====================== function code ====================== */

@@ -34,10 +34,10 @@ export default function CustomerAdd(props) {
         addCustomer()
             .then((response) => {
                 console.log(response.data);
+                props.stateRefresh();
             })
             .catch(e => console.log(`❌  handleFormsubmit ::`, e))
         setUser(initialUser);
-        window.location.reload();
     }
 
     const handleFileChange = (e) => {
