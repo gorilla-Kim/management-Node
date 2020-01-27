@@ -3,7 +3,7 @@
 React server 와 Express server 둘다 실행하여 둘간의 REST 통신 하기
 
 <https://chaewonkong.github.io/posts/express-with-react.html>
-
+. 
 
 
 ## 프록시(Proxy) 설정하기
