@@ -90,15 +90,36 @@ const styles = theme => ({
   },
 });
 
+const initialInputs = {
+  searchKeyWord: ''
+}
+
 function App(props) {
   const [customers, setCustomers] = useState(null);
   const [completed, setCompleted] = useState(0);
+  const [inputs, setInputs] = useState(initialInputs);
+
   const { classes } = props;
   const cellList = ['번호', '프로필 이미지', '이름', '생년월일', '성별', '직업', '삭제'];
 
+  const filteredComponents = data => {
+    data = data.filter(c => c.name.indexOf(inputs.searchKeyWord) > -1);
+    return data.map(customer => (
+      <Customer 
+        key={customer.id}
+        id={customer.id}
+        image={customer.image}
+        name={customer.name}
+        birthday={customer.birthday}
+        gender={customer.gender}
+        job={customer.job}
+        stateRefresh={stateRefresh}
+      />
+    ))
+  }
   const callApi = async () => {
     try {
-      // setCustomers(null);
+      setCustomers(null);
       const response = await axios.get('/api/customers');
       setCustomers(response.data)
     } catch (error) {
@@ -109,11 +130,17 @@ function App(props) {
   const stateRefresh = () => {
     setCustomers(null);
     setCompleted(0);
+    setInputs({...inputs, searchKeyWord: ""});
     callApi();
   }
 
   const progress = () => {
     setCompleted(oldProgress => (oldProgress >= 100 ? 0 : oldProgress + 1));
+  }
+
+  const handleValueChange = (e) => {
+    const { name, value } = e.target;
+    setInputs({...inputs, [name]: value});
   }
 
   useEffect(() => {
@@ -151,6 +178,9 @@ function App(props) {
                 input: classes.inputInput,
               }}
               inputProps={{ 'aria-label': 'search' }}
+              name="searchKeyWord"
+              value={inputs.searchKeyWord}
+              onChange={handleValueChange}
             />
           </div>
         </Toolbar>
@@ -166,25 +196,14 @@ function App(props) {
             </TableRow>
           </TableHead>
           <TableBody>
-            {customers ? customers.map(customer => {
-              return (
-                <Customer 
-                  key={customer.id}
-                  id={customer.id}
-                  image={customer.image}
-                  name={customer.name}
-                  birthday={customer.birthday}
-                  gender={customer.gender}
-                  job={customer.job}
-                  stateRefresh={stateRefresh}
-                />
-              )  
-            }) : 
-            <TableRow>
-              <TableCell colSpan="6" align="center">
-                <CircularProgress className={classes.progress} variant="determinate" value={completed}/>
-              </TableCell>
-            </TableRow>
+            {customers ? 
+              filteredComponents(customers)
+            : 
+              <TableRow>
+                <TableCell colSpan="6" align="center">
+                  <CircularProgress className={classes.progress} variant="determinate" value={completed}/>
+                </TableCell>
+              </TableRow>
             }
           </TableBody>
         </Table>
